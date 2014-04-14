@@ -232,6 +232,56 @@ std::string WinRegistryKey::getStringExpand(const std::string& name)
 }
 
 
+
+void WinRegistryKey::setBinary( const std::string& name, const std::string& value )
+{
+	open();
+#if defined(POCO_WIN32_UTF8)
+	std::wstring uname;
+	Poco::UnicodeConverter::toUTF16(name, uname);
+	if (RegSetValueExW(_hKey, uname.c_str(), 0, REG_BINARY, (CONST BYTE*) value.c_str(), (DWORD) value.size()) != ERROR_SUCCESS)
+		handleSetError(name); 
+#else
+	if (RegSetValueExA(_hKey,  name.c_str(), 0, REG_BINARY, (CONST BYTE*) value.c_str(), (DWORD) value.size()) != ERROR_SUCCESS)
+		handleSetError(name); 
+#endif
+}
+
+
+std::string WinRegistryKey::getBinary( const std::string& name )
+{
+	open();
+	DWORD type;
+	DWORD size;
+#if defined(POCO_WIN32_UTF8)
+	std::wstring uname;
+	Poco::UnicodeConverter::toUTF16(name, uname);
+	if (RegQueryValueExW(_hKey, uname.c_str(), NULL, &type, NULL, &size) != ERROR_SUCCESS || type != REG_BINARY)
+		throw NotFoundException(key(name));
+	if (size > 0)
+	{
+		char* buffer = new char[size];
+		RegQueryValueExW(_hKey, uname.c_str(), NULL, NULL, (BYTE*) buffer, &size);
+		std::string result(buffer, size);
+		delete [] buffer;
+		return result;
+	}
+#else
+	if (RegQueryValueExA(_hKey, name.c_str(), NULL, &type, NULL, &size) != ERROR_SUCCESS || type != REG_BINARY)
+		throw NotFoundException(key(name));
+	if (size > 0)
+	{
+		char* buffer = new char[size];
+		RegQueryValueExA(_hKey, name.c_str(), NULL, NULL, (BYTE*) buffer, &size);
+		std::string result(buffer, size);
+		delete [] buffer;
+		return result;
+	}
+#endif
+	return std::string();
+}
+
+
 void WinRegistryKey::setInt(const std::string& name, int value)
 {
 	open();
@@ -266,6 +316,38 @@ int WinRegistryKey::getInt(const std::string& name)
 	return data;
 }
 
+void WinRegistryKey::setInt64(const std::string& name, Int64 value)
+{
+	open();
+#if defined(POCO_WIN32_UTF8)
+	std::wstring uname;
+	Poco::UnicodeConverter::toUTF16(name, uname);
+	if (RegSetValueExW(_hKey, uname.c_str(), 0, REG_QWORD, (CONST BYTE*) &value, sizeof(value)) != ERROR_SUCCESS)
+		handleSetError(name); 
+#else
+	if (RegSetValueExA(_hKey, name.c_str(), 0, REG_QWORD, (CONST BYTE*) &value, sizeof(value)) != ERROR_SUCCESS)
+		handleSetError(name); 
+#endif
+}
+
+	
+Int64 WinRegistryKey::getInt64(const std::string& name)
+{
+	open();
+	DWORD type;
+	Poco::Int64 data;
+	DWORD size = sizeof(data);
+#if defined(POCO_WIN32_UTF8)
+	std::wstring uname;
+	Poco::UnicodeConverter::toUTF16(name, uname);
+	if (RegQueryValueExW(_hKey, uname.c_str(), NULL, &type, (BYTE*) &data, &size) != ERROR_SUCCESS || type != REG_QWORD)
+		throw NotFoundException(key(name));
+#else
+	if (RegQueryValueExA(_hKey, name.c_str(), NULL, &type, (BYTE*) &data, &size) != ERROR_SUCCESS || type != REG_QWORD)
+		throw NotFoundException(key(name));
+#endif
+	return data;
+}
 
 void WinRegistryKey::deleteValue(const std::string& name)
 {
@@ -379,8 +461,8 @@ WinRegistryKey::Type WinRegistryKey::type(const std::string& name)
 	if (RegQueryValueExA(_hKey, name.c_str(), NULL, &type, NULL, &size) != ERROR_SUCCESS)
 		throw NotFoundException(key(name));
 #endif
-	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_DWORD)
-		throw NotFoundException(key(name)+": type not supported");
+	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_DWORD && type != REG_QWORD && type != REG_BINARY)
+		throw NotFoundException(key(name) + ": type not supported");
 
 	Type aType = (Type)type;
 	return aType;
@@ -508,10 +590,43 @@ HKEY WinRegistryKey::handleFor(const std::string& rootKey)
 		throw InvalidArgumentException("Not a valid root key", rootKey);
 }
 
+std::string WinRegistryKey::errorMessage(unsigned long errorCode) {
+	std::string message;
+#if defined(POCO_WIN32_UTF8)
+	wchar_t* buffer = 0;
+	unsigned long n = ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS
+		, NULL
+		, errorCode
+		, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+		, (wchar_t*)&buffer
+		, 0
+		, NULL );
+
+	if ( n > 0 ) {
+		UnicodeConverter::toUTF8(buffer, message);
+		::LocalFree(buffer);
+	}
+#else
+	char* buffer = 0;
+	unsigned long n = ::FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS
+		, NULL
+		, errorCode
+		, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+		, (char*)&buffer
+		, 0
+		, NULL );
+
+	if ( n > 0 ) {
+		message = buffer;
+		::LocalFree(buffer);
+	}
+#endif
+	return message;
+}
 
 void WinRegistryKey::handleSetError(const std::string& name)
 {
-	std::string msg = "Failed to set registry value";
+	std::string msg = errorMessage(GetLastError());	// HAYK:"Failed to set registry value";
 	throw SystemException(msg, key(name));
 }
 

@@ -64,7 +64,9 @@ public:
 		REGT_NONE = 0, 
 		REGT_STRING = 1, 
 		REGT_STRING_EXPAND = 2, 
-		REGT_DWORD = 4
+		REGT_BINARY = 3,
+		REGT_DWORD = 4,
+		REGT_QWORD = 11
 	};
 
 	WinRegistryKey(const std::string& key, bool readOnly = false, REGSAM extraSam = 0);
@@ -115,12 +117,32 @@ public:
 		///
 		/// Throws a NotFoundException if the value does not exist.
 
+	void setBinary(const std::string& name, const std::string& value); 
+		/// Sets the string value (REG_BINARY) with the given name.
+		/// An empty name denotes the default value.
+
+	std::string getBinary(const std::string& name);
+		/// Returns the string value (REG_BINARY) with the given name.
+		/// An empty name denotes the default value.
+		///
+		/// Throws a NotFoundException if the value does not exist.
+
 	void setInt(const std::string& name, int value);
 		/// Sets the numeric (REG_DWORD) value with the given name.
 		/// An empty name denotes the default value.
 		
 	int getInt(const std::string& name);
 		/// Returns the numeric value (REG_DWORD) with the given name.
+		/// An empty name denotes the default value.
+		///
+		/// Throws a NotFoundException if the value does not exist.
+
+	void setInt64(const std::string& name, Int64 value);
+		/// Sets the numeric (REG_QWORD) value with the given name.
+		/// An empty name denotes the default value.
+		
+	Int64 getInt64(const std::string& name);
+		/// Returns the numeric value (REG_QWORD) with the given name.
 		/// An empty name denotes the default value.
 		///
 		/// Throws a NotFoundException if the value does not exist.
@@ -157,6 +179,8 @@ protected:
 	std::string key() const;
 	std::string key(const std::string& valueName) const;
 	void handleSetError(const std::string& name);
+	std::string errorMessage(unsigned long errorCode);
+		/// construct error message based on GetLastError core
 	static HKEY handleFor(const std::string& rootKey);
 
 private:

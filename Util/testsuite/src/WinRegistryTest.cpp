@@ -103,6 +103,13 @@ void WinRegistryTest::testRegistry()
 	regKey.deleteValue("name4");
 	assert (!regKey.exists("name4"));
 	
+	regKey.setInt64("name5", 64);
+	assert (regKey.getInt64("name5") == 64);
+	assert (regKey.exists("name5"));
+
+	regKey.deleteValue("name5");
+	assert (!regKey.exists("name5"));
+    
 	regKey.deleteKey();
 	assert (!regKey.exists());
 }
