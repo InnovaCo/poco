@@ -87,7 +87,10 @@ void SocketNotifier::removeObserver(SocketReactor* pReactor, const Poco::Abstrac
 
 namespace
 {
-	static Socket nullSocket;
+	Socket& getNullSocket() {
+		static Socket nullSocket;
+		return nullSocket;
+	}
 }
 
 
@@ -101,10 +104,10 @@ void SocketNotifier::dispatch(SocketNotification* pNotification)
 	}
 	catch (...)
 	{
-		pNotification->setSocket(nullSocket);
+		pNotification->setSocket(getNullSocket());
 		throw;
 	}
-	pNotification->setSocket(nullSocket);
+	pNotification->setSocket(getNullSocket());
 }
 
 
