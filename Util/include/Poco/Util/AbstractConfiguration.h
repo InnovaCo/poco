@@ -218,6 +218,14 @@ public:
 		/// If the value contains references to other properties (${<property>}), these
 		/// are expanded.
 		
+	std::string getBinary(const std::string& key) const;
+		/// Returns the std::string value of the property with the given name.
+		/// Throws a NotFoundException if the key does not exist.
+
+	std::string getBinary(const std::string& key, const std::string& defaultValue) const;
+		/// If a property with the given key exists, returns the property's raw string value,
+		/// otherwise returns the given default value.
+		
 	void setString(const std::string& key, const std::string& value);
 		/// Sets the property with the given key to the given value.
 		/// An already existing value for the key is overwritten.

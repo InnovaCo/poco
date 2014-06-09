@@ -135,6 +135,27 @@ std::string AbstractConfiguration::getRawString(const std::string& key, const st
 		return defaultValue;
 }
 
+std::string AbstractConfiguration::getBinary( const std::string& key ) const
+{
+	FastMutex::ScopedLock lock(_mutex);
+
+	std::string value;
+	if (getRaw(key, value))
+		return value;
+	else
+		throw NotFoundException(key);
+}
+
+std::string AbstractConfiguration::getBinary( const std::string& key, const std::string& defaultValue ) const
+{
+	FastMutex::ScopedLock lock(_mutex);
+
+	std::string value;
+	if (getRaw(key, value))
+		return value;
+	else
+		return defaultValue;
+}
 	
 int AbstractConfiguration::getInt(const std::string& key) const
 {
