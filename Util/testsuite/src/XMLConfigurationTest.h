@@ -19,6 +19,7 @@
 #include "AbstractConfigurationTest.h"
 #include "Poco/Util/Util.h"
 
+#ifndef POCO_UTIL_NO_XMLCONFIGURATION
 
 class XMLConfigurationTest: public AbstractConfigurationTest
 {
@@ -40,5 +41,6 @@ private:
 	virtual Poco::Util::AbstractConfiguration* allocConfiguration() const;
 };
 
+#endif
 
 #endif // XMLConfigurationTest_INCLUDED

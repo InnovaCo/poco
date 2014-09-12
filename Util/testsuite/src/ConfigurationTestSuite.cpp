@@ -36,10 +36,15 @@ CppUnit::Test* ConfigurationTestSuite::suite()
 	pSuite->addTest(SystemConfigurationTest::suite());
 	pSuite->addTest(IniFileConfigurationTest::suite());
 	pSuite->addTest(PropertyFileConfigurationTest::suite());
+#ifndef POCO_UTIL_NO_XMLCONFIGURATION
 	pSuite->addTest(XMLConfigurationTest::suite());
+#endif
 	pSuite->addTest(FilesystemConfigurationTest::suite());
 	pSuite->addTest(LoggingConfiguratorTest::suite());
+
+#ifndef POCO_UTIL_NO_JSONCONFIGURATION
 	pSuite->addTest(JSONConfigurationTest::suite());
+#endif
 
 	return pSuite;
 }

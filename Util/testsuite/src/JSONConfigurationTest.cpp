@@ -11,6 +11,9 @@
 
 
 #include "JSONConfigurationTest.h"
+
+#ifndef POCO_UTIL_NO_JSONCONFIGURATION
+
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
 #include "Poco/Util/JSONConfiguration.h"
@@ -142,3 +145,5 @@ CppUnit::Test* JSONConfigurationTest::suite()
 
 	return pSuite;
 }
+
+#endif

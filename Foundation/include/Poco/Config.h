@@ -33,10 +33,10 @@
 
 
 // Define to disable automatic initialization
-// Defining this will disable ALL automatic 
+// Defining this will disable ALL automatic
 // initialization framework-wide (e.g. Net
 // on Windows, all Data back-ends, etc).
-// 
+//
 // #define POCO_NO_AUTOMATIC_LIB_INIT
 
 
@@ -75,19 +75,19 @@
 // #define POCO_THREAD_PRIORITY_MAX 31
 
 
-// Define to disable small object optimization. If not 
+// Define to disable small object optimization. If not
 // defined, Any and Dynamic::Var (and similar optimization
-// candidates) will be auto-allocated on the stack in 
+// candidates) will be auto-allocated on the stack in
 // cases when value holder fits into POCO_SMALL_OBJECT_SIZE
 // (see below).
-// 
+//
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! NOTE: Any/Dynamic::Var SOO will NOT work reliably   !!!
 // !!! without C++11 (std::aligned_storage in particular). !!!
 // !!! Only comment this out if your compiler has support  !!!
 // !!! for std::aligned_storage.                           !!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// 
+//
 #define POCO_NO_SOO
 
 
@@ -113,7 +113,7 @@
 
 
 // No automatic registration of FileChannel in
-// LoggingFactory - avoids FileChannel and friends 
+// LoggingFactory - avoids FileChannel and friends
 // being linked to executable.
 // #define POCO_NO_FILECHANNEL
 
@@ -139,16 +139,16 @@
 // #define POCO_UTIL_NO_INIFILECONFIGURATION
 
 
-// No support for JSON configuration in 
+// No support for JSON configuration in
 // Poco::Util::Application. Avoids linking of JSON
 // library and saves a few 100 Kbytes.
-// #define POCO_UTIL_NO_JSONCONFIGURATION
+#define POCO_UTIL_NO_JSONCONFIGURATION
 
 
-// No support for XML configuration in 
+// No support for XML configuration in
 // Poco::Util::Application. Avoids linking of XML
 // library and saves a few 100 Kbytes.
-// #define POCO_UTIL_NO_XMLCONFIGURATION
+#define POCO_UTIL_NO_XMLCONFIGURATION
 
 
 // No IPv6 support

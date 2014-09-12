@@ -19,6 +19,7 @@
 #include <sstream>
 #include <algorithm>
 
+#ifndef POCO_UTIL_NO_XMLCONFIGURATION
 
 using Poco::Util::XMLConfiguration;
 using Poco::Util::AbstractConfiguration;
@@ -294,3 +295,5 @@ CppUnit::Test* XMLConfigurationTest::suite()
 
 	return pSuite;
 }
+
+#endif

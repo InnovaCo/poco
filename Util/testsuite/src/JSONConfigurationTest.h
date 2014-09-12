@@ -19,6 +19,7 @@
 #include "AbstractConfigurationTest.h"
 #include "Poco/Util/Util.h"
 
+#ifndef POCO_UTIL_NO_JSONCONFIGURATION
 
 class JSONConfigurationTest: public AbstractConfigurationTest
 {
@@ -38,5 +39,6 @@ private:
 	virtual Poco::Util::AbstractConfiguration* allocConfiguration() const;
 };
 
+#endif // POCO_UTIL_NO_JSONCONFIGURATION
 
 #endif // JSONConfigurationTest_INCLUDED
